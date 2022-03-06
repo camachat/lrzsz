@@ -72,7 +72,7 @@ tcp_server (char *buf)
 		error(1,errno,"bind");
 	}
 	len=sizeof(t);
-	if (getsockname (sock, (struct sockaddr *) &t, &len)) {
+	if (getsockname (sock, (struct sockaddr *) &t, (socklen_t*)&len)) {
 		error(1,errno,"getsockname");
 	}
 	sprintf(buf,"[%s] <%d>\n",inet_ntoa(t.sin_addr),ntohs(t.sin_port));
@@ -80,7 +80,7 @@ tcp_server (char *buf)
 	if (listen(sock, 1) < 0) {
 		error(1,errno,"listen");
 	}
-	getsockname (sock, (struct sockaddr *) &t, &len);
+	getsockname (sock, (struct sockaddr *) &t, (socklen_t*)&len);
 
 	return (sock);
 }
@@ -100,7 +100,7 @@ tcp_accept (int d)
 retry:
 	signal(SIGALRM, tcp_alarm_handler);
 	alarm(30);
-	if ((so = accept(d, (struct sockaddr*)&s, &namelen)) < 0) {
+	if ((so = accept(d, (struct sockaddr*)&s, (socklen_t*)&namelen)) < 0) {
 		if (errno == EINTR) {
 			if (++num<=5)
 				goto retry;
